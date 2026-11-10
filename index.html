@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<script src="PAGINAPRO.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Dinámica — Actividad JS</title>
+    <style>
+
+        :root {
+            --fondo:        #f4f6fb;
+            --td:           #f374ff;
+            --texto:        #222222;
+            --tarjeta:      #ffffff;
+            --borde:        #e0e0e0;
+            --acento:       #d186cc;
+            --acento-hover: #e102ad;
+            --sombra:       rgba(0,0,0,0.10);
+            --header-bg:    #e066f3;
+        }
+
+        body.oscuro {
+            --fondo:        #1c1c1d;
+            --td:           #90069a;
+            --texto:        #ffffff;
+            --tarjeta:      #1e1e30;
+            --borde:        #333355;
+            --acento:       #b95bb3;
+            --acento-hover: #b6068d;
+            --sombra:       rgba(0,0,0,0.45);
+            --header-bg:     #9800af;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--fondo);
+            color: var(--texto);
+            transition: background-color 0.35s, color 0.35s;
+            min-height: 100vh;
+        }
+
+        
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .fondo-banner {
+            background-image: url(images\ \(2\).jfif);
+            background-repeat: no-repeat;
+            background-size: cover;
+            height: 450px;
+            position: relative;
+            margin-bottom: 2rem;
+            display: grid;
+            grid-template-rows: max-content 1fr;
+            grid-template-areas: "nav" "content";
+            min-height: 100vh;
+        }
+
+        .contenido-banner{
+        color: var(--blanco);
+        position: absolute;
+        background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7));
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        }
+
+        .contenido-banner .ubicacion{
+        display: flex;
+        align-items: center;
+        grid-template-columns: auto;
+        }
+
+        header h1 { font-size: 1.3rem; letter-spacing: 0.5px; }
+
+        #btn-tema {
+            background: white;
+            color: var(--header-bg);
+            border: none;
+            padding: 0.45rem 1.1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        #btn-tema:hover { transform: scale(1.06); }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        .titulo-seccion {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-left: 0.9rem;
+            border-left: 5px solid var(--acento);
+            color: var(--texto);
+        }
+
+        
+        .table2 {
+            border: none;
+            background-color: var(--header-bg);
+            border-radius: 10px;
+            margin: 20px auto;
+            border-collapse: separate;
+            border-spacing: 15px;
+            max-width: 1000px;
+            width: 90%;
+        }
+
+        .table2 h2{
+            color: #ffffff;
+        }
+
+        .subtitulo h2{
+            color: #ffffff;
+            font-family: sans-serif;
+            font-size: 40px;
+            text-align: center;
+        }
+
+        .table2 td {
+            background-color: var(--td);
+            border-radius: 15px;
+            padding: 20px;
+            vertical-align: middle;
+            width: 50%;
+        }
+
+        .columna-imagen {
+            text-align: center;
+        }
+
+        .img-promo {
+            max-width: 100%;
+            height: auto;
+            max-height: 300px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+    
+
+        .carrusel-contenedor {
+            position: relative;      /* necesario para posicionar las flechas */
+        }
+        .carrusel-wrapper {
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        /*
+         La "cinta" de tarjetas.
+         display: flex pone todas las tarjetas en fila.
+         transition hace que el deslizamiento sea suave.
+         JS cambia transform: translateX(-Xpx) para moverla.
+        */
+        .carrusel-track {
+            display: flex;
+            gap: 1.2rem;
+            transition: transform 0.4s ease;
+            padding: 0.5rem 0.2rem 1rem;
+        }
+
+        /* Cada tarjeta de producto */
+        .producto-card {
+            /*
+             calc(25% - 0.9rem) → cada tarjeta ocupa 1/4 del ancho
+             menos el espacio del gap. Así entran 4 exactas.
+             flex-shrink: 0 → evita que se achiquen.
+            */
+            flex: 0 0 calc(25% - 0.9rem);
+            min-width: 0;
+
+            background-color: var(--tarjeta);
+            border: 1px solid var(--borde);
+            border-radius: 12px;
+            box-shadow: 0 3px 10px var(--sombra);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.35s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .producto-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px var(--sombra);
+        }
+
+        .producto-card img {
+            width: 100%;
+            aspect-ratio: 1 / 1;   /* siempre cuadrada */
+            object-fit: cover;
+            display: block;
+        }
+
+        .producto-info {
+            padding: 0.9rem 1rem 1rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 0.35rem;
+        }
+
+        .producto-nombre {
+            font-weight: 700;
+            font-size: 0.95rem;
+            line-height: 1.3;
+        }
+
+        .producto-descripcion {
+            font-size: 0.82rem;
+            color: #888;
+            flex: 1;
+        }
+
+        .producto-precio {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--acento);
+        }
+
+        /* Botón Agregar al carrito */
+        .btn-agregar {
+            margin-top: 0.5rem;
+            background-color: var(--acento);
+            color: white;
+            border: none;
+            padding: 0.55rem 0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s, transform 0.15s;
+        }
+        .btn-agregar:hover {
+            background-color: var(--acento-hover);
+            transform: scale(1.02);
+        }
+
+        /* ── FLECHAS DEL CARRUSEL ── */
+        .flecha {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--acento);
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            transition: background-color 0.2s, transform 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .flecha:hover { background-color: var(--acento-hover); transform: translateY(-50%) scale(1.1); }
+        .flecha:disabled { background: #ccc; cursor: default; transform: translateY(-50%); }
+
+        #btn-anterior { left: -20px; }
+        #btn-siguiente { right: -20px; }
+
+        /* ── INDICADORES (puntitos) ── */
+        .indicadores {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .punto {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--borde);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .punto.activo {
+            background: var(--acento);
+            transform: scale(1.3);
+        }
+
+        /* ── CARRITO FLOTANTE ── */
+        #carrito-flotante {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--acento);
+            color: white;
+            padding: 0.8rem 1.3rem;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s;
+            z-index: 200;
+        }
+        #carrito-flotante:hover { transform: scale(1.05); }
+
+        /* Animación de "rebote" al agregar */
+        @keyframes rebote {
+            0%   { transform: scale(1); }
+            40%  { transform: scale(1.25); }
+            70%  { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+        .rebote { animation: rebote 0.4s ease; }
+
+        /* ── FOOTER ── */
+        footer {
+            background-color: var(--header-bg);
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.85rem;
+        }
+        
+@media (max-width: 600px) {
+
+    body {
+        overflow-x: hidden;
+    }
+
+    header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+        text-align: center;
+    }
+
+    header h1 {
+        font-size: 1.2rem;
+    }
+
+    #btn-tema {
+        font-size: 0.8rem;
+        padding: 8px 14px;
+    }
+
+    .fondo-banner {
+        height: 260px;
+        min-height: 260px;
+        margin-bottom: 1rem;
+        background-position: center;
+    }
+
+    .contenido-banner {
+        width: 100%;
+        height: 100%;
+        padding: 10px;
+    }
+
+    .contenido-banner .Ubicacion {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        text-align: center;
+    }
+
+    .contenido-banner .Ubicacion p:first-child {
+        font-size: 22px !important;
+    }
+
+    .contenido-banner .Ubicacion p:last-child {
+        font-size: 15px !important;
+    }
+
+    .table2 {
+        display: block;
+        width: 94%;
+        max-width: 440px;
+        margin: 15px auto;
+        padding: 6px;
+        border-spacing: 0;
+    }
+
+    .table2 tbody,
+    .table2 tr,
+    .table2 td {
+        display: block;
+        width: 100%;
+    }
+
+    .table2 td {
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+
+    .table2 td h1 {
+        font-size: 20px !important;
+        margin-bottom: 8px !important;
+        text-align: center;
+    }
+
+    .table2 td p {
+        font-size: 13px !important;
+        line-height: 1.4;
+        margin-bottom: 5px;
+    }
+
+    .img-promo {
+        width: 100%;
+        max-height: 180px;
+        object-fit: cover;
+    }
+
+    main {
+        width: 100%;
+        padding: 20px 12px 60px;
+    }
+
+    .titulo-seccion {
+        font-size: 1.25rem;
+        margin-bottom: 15px;
+    }
+
+    .carrusel-contenedor {
+        padding: 0 12px;
+    }
+
+    .carrusel-wrapper {
+        border-radius: 10px;
+    }
+
+    .carrusel-track {
+        gap: 0.3rem;
+    }
+
+    .producto-card {
+        flex: 0 0 100%;
+        min-width: 0;
+    }
+
+    .producto-card img {
+        width: 100%;
+        height: 180px;
+        aspect-ratio: auto;
+        object-fit: cover;
+    }
+
+    .producto-info {
+        padding: 12px;
+        gap: 5px;
+    }
+
+    .producto-nombre {
+        font-size: 0.95rem;
+    }
+
+    .producto-descripcion {
+        font-size: 0.78rem;
+        line-height: 1.3;
+    }
+
+    .producto-precio {
+        font-size: 1.05rem;
+    }
+
+    .btn-agregar {
+        font-size: 0.85rem;
+        padding: 9px;
+    }
+
+    .flecha {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    #btn-anterior {
+        left: -5px;
+    }
+
+    #btn-siguiente {
+        right: -5px;
+    }
+
+    .indicadores {
+        margin-top: 10px;
+    }
+
+    .punto {
+        width: 9px;
+        height: 9px;
+    }
+
+    #carrito-flotante {
+        bottom: 10px;
+        right: 10px;
+        padding: 9px 13px;
+        font-size: 0.85rem;
+    }
+
+    footer {
+        padding: 12px;
+        font-size: 0.75rem;
+    }
+
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+
+    header {
+        padding: 12px 20px;
+    }
+
+    .fondo-banner {
+        height: 380px;
+        min-height: 380px;
+        background-position: center;
+    }
+
+    .contenido-banner .Ubicacion {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
+    }
+
+    .contenido-banner .Ubicacion p:first-child {
+        font-size: 32px !important;
+    }
+
+    .contenido-banner .Ubicacion p:last-child {
+        font-size: 24px !important;
+    }
+
+    .table2 {
+        width: 95%;
+        border-spacing: 8px;
+    }
+
+    .table2 td {
+        padding: 12px;
+    }
+
+    .table2 td h1 {
+        font-size: 22px !important;
+    }
+
+    .table2 td p {
+        font-size: 14px !important;
+        line-height: 1.4;
+    }
+
+    .img-promo {
+        max-width: 100%;
+        max-height: 220px;
+        object-fit: contain;
+    }
+
+    main {
+        padding: 25px 20px 50px;
+    }
+
+    .carrusel-track {
+        gap: 1.2rem;
+    }
+
+    .producto-card {
+        flex: 0 0 calc(50% - 0.9rem);
+    }
+
+    .producto-card img {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+    }
+
+    .flecha {
+        width: 36px;
+        height: 36px;
+    }
+
+}
+
+@media (min-width: 901px) {
+
+    header {
+        padding: 1rem 2rem;
+    }
+
+    main {
+        max-width: 1100px;
+        margin: auto;
+        padding: 2.5rem 1.5rem 4rem;
+    }
+
+    .fondo-banner {
+        height: 450px;
+        min-height: 100vh;
+        background-position: center;
+    }
+
+    .table2 {
+        width: 90%;
+        max-width: 1000px;
+        margin: 20px auto;
+    }
+
+    .table2 td {
+        width: 50%;
+        padding: 20px;
+    }
+
+    .img-promo {
+        max-width: 100%;
+        max-height: 300px;
+    }
+
+    .carrusel-track {
+        gap: 1.2rem;
+    }
+
+    .producto-card {
+        flex: 0 0 calc(25% - 0.9rem);
+    }
+
+    .producto-card img {
+        aspect-ratio: 1 / 1;
+    }
+
+}
+.carrusel-contenedor {
+    width: 95%;
+    max-width: 950px;
+    margin: auto;
+}
+
+.carrusel-wrapper {
+    width: 100%;
+}
+
+.producto-info {
+    padding: 0.75rem 0.8rem;
+}
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+============================================================ -->
+<header>
+    <h1>Pastelería Papatolio</h1>
+    <!--
+        onclick="cambiarTema()" llama a la función en dinamica.js
+        classList.toggle("oscuro") agrega o quita la clase del body
+    -->
+    <button id="btn-tema" onclick="cambiarTema()">🌙 Modo Oscuro</button>
+</header>
+<section class="fondo-banner">
+    <div class="contenido-banner">
+        <div class="Ubicacion">
+            <p style="font-size: 45px; color: #e26eff;">Pastelería Papatolio</p>
+            <p style="font-size: 40px; color: #f9f9f9;">En Berazategui, Buenos Aires</p>
+        </div>
+    </div>
+</section>
+
+<table class="table2">
+    <tr>
+        <td>
+            <h1 style="color: #ffffff; font-size: 27px; margin-bottom: 10px;">Nuestra historia</h1>
+            <p style="font-size: 17px;">Más de 500 años transmitiendo emociones a través de pasteles.</p>
+            <p style="font-size: 17px;">Siendo un emprendimiento ubicado en la provincia de Buenos Aires,</p>
+            <p style="font-size: 17px;">todo comenzó con Papatolio, quien a los 17 años tenía una pasión que</p>
+            <p style="font-size: 17px;">se transformó en un negocio propio, al que llamó Pastelería Papatolio:</p>
+            <p style="font-size: 17px;">Una pastelería donde la calidad y sabor son parte de cada vida.</p>
+        </td>
+        <td class="columna-imagen">
+            <img src="promo.jfif" alt="Promoción" class="img-promo">
+        </td>
+    </tr>
+</table>
+
+<main>
+
+    <h2 class="titulo-seccion">Nuestros Postres</h2>
+
+    <!--
+        ESTRUCTURA DEL CARRUSEL:
+        .carrusel-contenedor → posiciona las flechas
+        .carrusel-wrapper    → recorta con overflow: hidden
+        .carrusel-track      → la fila de tarjetas que se mueve
+        Las tarjetas .producto-card las genera JS automáticamente
+    -->
+    <div class="carrusel-contenedor">
+
+        <!-- Flecha izquierda -->
+        <button class="flecha" id="btn-anterior" onclick="moverCarrusel(-1)">◀</button>
+
+        <div class="carrusel-wrapper">
+            <!-- JS llena este div con las tarjetas de productos -->
+            <div class="carrusel-track" id="carrusel-track"></div>
+        </div>
+
+        <!-- Flecha derecha -->
+        <button class="flecha" id="btn-siguiente" onclick="moverCarrusel(1)">▶</button>
+
+    </div>
+
+    <!-- Puntitos indicadores — JS los genera automáticamente -->
+    <div class="indicadores" id="indicadores"></div>
+
+</main>
+
+
+<footer>
+    <p>Pastelería Papatolio</p>
+</footer>
+
+
+<!--
+    Botón flotante del carrito (aparece al agregar productos)
+    JS lo muestra y actualiza el contador
+-->
+<button id="carrito-flotante" onclick="verCarrito()" style="display:none;">
+    🛒 <span id="contador-carrito">0</span> productos
+</button>
+
+
+<!--
+    VINCULAMOS EL JS AL FINAL DEL BODY
+    Así el HTML ya existe cuando JS lo intenta modificar
+-->
+<script src="PAGINAPRO.js"></script>
+
+</body>
+</html>
